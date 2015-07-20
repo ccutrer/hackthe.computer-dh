@@ -22,6 +22,8 @@ IO.popen("openssl sha256", "r+") do |io|
   symm_key = io.readlines
 end
 $stderr.puts symm_key.inspect
+symm_key = symm_key.slice(10, 16)
+$stderr.puts symm_key.inspect
 
 puts 'OK'
 puts dh.pub_key.to_s(16).downcase
