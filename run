@@ -1,5 +1,53 @@
-#!/usr/bin/python
+#!/usr/bin/env ruby
 
-# To solve this problem, make the './run' executable handle any 
-# appropriate command line arguments and stdin and output the
-# solution to stdout.
+
+require 'openssl'
+
+der = "0\x82\x01\b\x02\x82\x01\x01\x00\xF2\xB2\xAB\x9D{#\xC8O\x9F\x0E\xC2\xF3\xBC@\xC5\xC4\xECGd\xA7\xC3\xD0\x14If& \xDDC\xF3\xD9zdQZ*\xF5\xB3\xC8\xE3\xF2$\xB8\xD1\x8D\a\xB6\xB6\"a \n\xD8H\xF5\xFF\x8A\xC1\x9A\esC\x99M\xE8F\xDEi\xC1\xC2\xEE^b\xFEN\xD3t\xE6\x85\xE4\x86\xF1\xB8\x97\xD7-\x01\xDF\\\x99\xAEr\xB8\xE9\xA3\x17w\xCC\xAA\x11\xA5\xAEl\xA0\x8C\xFC\x81\x02i3v`$\x8D\v\xE9\xB8!N\xCD\xD4eo })w\xA76ND:\xCFC\x1A\xF7j\xEA\xD7\"O\x86\xA0>\xB9\x99\x86\x92\xAC\xEB\xD5\fU\x8C\xE9\xA7\xFE\xFC7\xAB$/\f\x19\xB5\x1A\x01g\xD5\xDA\xE9K\x852\x10\xF6\xF4\x92\xA9\xBB\xB3\x9A\xD8\t9kD\xA2\x99\xBD\x85\xAC\xAF\xDF\xED\xBCM!\xAE.\xC3\a\xAB=\xAB\t\xD7\x99\xC6\x01\x1CA\xCF\x81=b\x1E\xF2\x05\xCF\"v\xD0\xCFz\xCF\t\x10\x8E\x14\xA8\xB8\xDD\xE1\xEE E\xDE\xAE\xBD\xB5)\xDB\xD1\x87\xD4\xEEK0\xA9FX\xB1V\xAC3\x02\x01\x02"
+
+dh = OpenSSL::PKey::DH.new(der)
+dh.generate_key!
+
+hello = $stdin.gets
+raise "suck" unless hello == "SimpleSSLv0\n"
+
+other_pub = OpenSSL::BN.new($stdin.gets.strip.to_i(16))
+
+dh_session_id = dh.compute_key(other_pub)
+symm_key = Digest::SHA26.new.digest(dh_session_id)[0...16]
+
+puts 'OK'
+puts dh.pub_key.to_s(16)
+
+
+server_nonce = 0
+client_nonce = 0xffffffff
+
+while true
+  len = $stdin.read(4)
+  break if len.empty?
+
+  len = len.unpack("l>").first
+
+  decrypt = OpenSSL::Cipher.new('aes-128-gcm')
+  decrypt.decrypt
+  decrypt.key = symm_key
+  decrypt.iv = client_nonce
+  decrypt.auth_data = ''
+  
+  encrypt = OpenSSL::Cipher.new('aes-128-gcm')
+  encrypt.encrypt
+  encrypt.key = symm_key
+  encrypt.iv = server_nonce
+  encrypt.auth_data = ''
+
+  server_nonce += 1
+  client_nonce -= 1
+
+  data = $stdin.read(len)
+
+  plain = decrypt.update(data) + decrypt.final
+  encrypted = encrypt.update(plain) + encrypt.final
+
+  $stdout.write([encrypted.length].pack("l>") + encrypted)
+end
