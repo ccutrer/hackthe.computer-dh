@@ -16,6 +16,7 @@ other_pub = OpenSSL::BN.new($stdin.gets.strip.to_i(16))
 dh_session_id = dh.compute_key(other_pub)
 symm_key = nil
 IO.popen("openssl sha256", "r+") do |io|
+  io.write("\0")
   io.write(dh_session_id)
   io.flush
   io.close_write
