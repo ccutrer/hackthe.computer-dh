@@ -13,7 +13,10 @@ raise "suck" unless hello == "SimpleSSLv0\n"
 
 other_pub = $stdin.gets.strip.to_i(16)
 
+$stderr.puts "client's public key: #{other_pub}"
+
 session_id = base.to_bn.mod_exp(other_pub, prime).to_i
+$stderr.puts "session key in hex: #{session_id.to_s(16)}"
 session_id = [session_id.to_s(16)].pack("H*")
 $stderr.puts session_id.length
 while (session_id.length < 257)
@@ -29,6 +32,7 @@ IO.popen("openssl sha256", "r+") do |io|
   symm_key = io.readlines.first
 end
 $stderr.puts symm_key.inspect
+$stderr.puts symm_key.slice(9, 32)
 symm_key = [symm_key.slice(9, 32)].pack("H*")
 $stderr.puts symm_key.inspect
 
