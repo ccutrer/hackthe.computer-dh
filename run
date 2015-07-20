@@ -33,7 +33,7 @@ symm_key = [symm_key.slice(9, 32)].pack("H*")
 $stderr.puts symm_key.inspect
 
 puts 'OK'
-puts dh.pub_key.to_s(16).downcase
+puts public.to_s(16).downcase
 $stdout.flush
 
 server_nonce = 0
