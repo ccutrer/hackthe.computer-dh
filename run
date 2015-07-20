@@ -37,18 +37,18 @@ while true
 $stderr.puts "got first line: #{len.inspect}"
   break if len.empty?
 
-  len = len.unpack("l>").first
+  len = len.unpack("L>").first
 
   decrypt = OpenSSL::Cipher.new('aes-128-gcm')
   decrypt.decrypt
   decrypt.key = symm_key
-  decrypt.iv = [client_nonce].pack("l>")
+  decrypt.iv = [client_nonce].pack("Q>")
   decrypt.auth_data = ''
   
   encrypt = OpenSSL::Cipher.new('aes-128-gcm')
   encrypt.encrypt
   encrypt.key = symm_key
-  encrypt.iv = [server_nonce].pack("l>")
+  encrypt.iv = [server_nonce].pack("Q>")
   encrypt.auth_data = ''
 
   server_nonce += 1
@@ -59,6 +59,6 @@ $stderr.puts "got first line: #{len.inspect}"
   plain = decrypt.update(data) + decrypt.final
   encrypted = encrypt.update(plain) + encrypt.final
 
-  $stdout.write([encrypted.length].pack("l>") + encrypted)
+  $stdout.write([encrypted.length].pack("L>") + encrypted)
   $stdout.flush
 end
