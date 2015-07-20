@@ -18,6 +18,7 @@ symm_key = nil #OpenSSL::Digest::SHA26.new.digest(dh_session_id)[0...16]
 
 puts 'OK'
 puts dh.pub_key.to_s(16).downcase
+$stdout.flush
 $stderr.puts "sent pub key: #{dh.pub_key.to_s(16).downcase}"
 
 server_nonce = 0
@@ -51,4 +52,5 @@ $stderr.puts "got first line: #{len.inspect}"
   encrypted = encrypt.update(plain) + encrypt.final
 
   $stdout.write([encrypted.length].pack("l>") + encrypted)
+  $stdout.flush
 end
