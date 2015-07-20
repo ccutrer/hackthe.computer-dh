@@ -55,7 +55,7 @@ $stderr.puts "got first line: #{len.inspect}"
   encrypt = OpenSSL::Cipher.new('aes-128-gcm')
   encrypt.encrypt
   encrypt.key = symm_key
-  encrypt.iv = [server_nonce].pack("Q>") + [0].pack("L>")
+  encrypt.iv = [0].pack("L>") + [server_nonce].pack("Q>")
   encrypt.auth_data = ''
 
   server_nonce += 1
