@@ -18,7 +18,7 @@ symm_key = nil #OpenSSL::Digest::SHA26.new.digest(dh_session_id)[0...16]
 
 puts 'OK'
 puts dh.pub_key.to_s(16)
-$stderr.puts "sent pub key"
+$stderr.puts "sent pub key: #{dh.pub_key.to_s(16)}"
 
 server_nonce = 0
 client_nonce = 0xffffffff
