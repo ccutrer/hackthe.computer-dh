@@ -19,7 +19,7 @@ IO.popen("openssl sha256", "r+") do |io|
   io.write(dh_session_id)
   io.flush
   io.close_write
-  symm_key = io.readlines
+  symm_key = io.readlines.first
 end
 $stderr.puts symm_key.inspect
 symm_key = symm_key.slice(10, 16)
