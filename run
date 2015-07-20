@@ -17,7 +17,6 @@ session_id = other_pub.to_bn.mod_exp(base, prime).to_i
 session_id = [session_id].pack("H*")
 $stderr.puts session_id.length
 
-#while (session_id
 
 symm_key = nil
 IO.popen("openssl sha256", "r+") do |io|
