@@ -18,6 +18,7 @@ symm_key = nil
 IO.popen("openssl sha256") do |io|
   io.write(dh_session_id)
   io.flush
+  io.close_write
   symm_key = io.readlines
 end
 $stderr.puts symm_key.inspect
