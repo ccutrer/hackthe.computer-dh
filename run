@@ -14,7 +14,10 @@ raise "suck" unless hello == "SimpleSSLv0\n"
 other_pub = $stdin.gets.strip.to_i(16)
 
 session_id = other_pub.to_bn.mod_exp(base, prime).to_i
-$stderr.puts session_id.to_s(16).length
+session_id = [session_id].pack("H*")
+$stderr.puts session_id.length
+
+while (session_id
 
 symm_key = nil
 IO.popen("openssl sha256", "r+") do |io|
