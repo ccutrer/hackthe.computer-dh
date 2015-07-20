@@ -22,7 +22,7 @@ IO.popen("openssl sha256", "r+") do |io|
   symm_key = io.readlines.first
 end
 $stderr.puts symm_key.inspect
-symm_key = symm_key.slice(10, 16)
+symm_key = [symm_key.slice(9, 32)].pack("H*")
 $stderr.puts symm_key.inspect
 
 puts 'OK'
