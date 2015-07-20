@@ -14,7 +14,7 @@ raise "suck" unless hello == "SimpleSSLv0\n"
 other_pub = OpenSSL::BN.new($stdin.gets.strip.to_i(16))
 
 dh_session_id = dh.compute_key(other_pub)
-symm_key = Digest::SHA26.new.digest(dh_session_id)[0...16]
+symm_key = nil #OpenSSL::Digest::SHA26.new.digest(dh_session_id)[0...16]
 
 puts 'OK'
 puts dh.pub_key.to_s(16)
