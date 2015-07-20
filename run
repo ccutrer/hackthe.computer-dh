@@ -16,12 +16,14 @@ other_pub = $stdin.gets.strip.to_i(16)
 session_id = other_pub.to_bn.mod_exp(base, prime).to_i
 session_id = [session_id.to_s(16)].pack("H*")
 $stderr.puts session_id.length
-
+while (session_id.length < 257)
+  session_id.unshift("\0")
+end
+$stderr.puts session_id.length
 
 symm_key = nil
 IO.popen("openssl sha256", "r+") do |io|
-  io.write("\0")
-  io.write(dh_session_id)
+  io.write(session_id)
   io.flush
   io.close_write
   symm_key = io.readlines.first
