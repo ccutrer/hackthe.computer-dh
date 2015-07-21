@@ -50,28 +50,32 @@ $stderr.puts "got first line: #{len.inspect}"
 
   len = len.unpack("L>").first
 
+  data = $stdin.read(len)
+
   decrypt = OpenSSL::Cipher.new('aes-128-gcm')
   decrypt.decrypt
   decrypt.key = symm_key
   iv = [0xffffffff].pack("L>") + [client_nonce].pack("Q>")
   decrypt.iv = iv
+  decrypt.auth_tag = data[-16..-1]
+  data = data[0...-16]
+
+  plain = decrypt.update(data) + decrypt.final
+
 
   $stderr.puts(iv.unpack("H*"))
-  decrypt.auth_data = ''
-  
+
   encrypt = OpenSSL::Cipher.new('aes-128-gcm')
   encrypt.encrypt
   encrypt.key = symm_key
   encrypt.iv = [0].pack("L>") + [server_nonce].pack("Q>")
+#encrypt.iv = iv
   encrypt.auth_data = ''
+
+  encrypted = encrypt.update(plain) + encrypt.final + encrypt.auth_tag
 
   server_nonce += 1
   client_nonce -= 1
-
-  data = $stdin.read(len)
-
-  plain = decrypt.update(data) + decrypt.final
-  encrypted = encrypt.update(plain) + encrypt.final
 
   $stdout.write([encrypted.length].pack("L>") + encrypted)
   $stdout.flush
