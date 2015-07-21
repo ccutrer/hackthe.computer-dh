@@ -15,7 +15,7 @@ other_pub = $stdin.gets.strip.to_i(16)
 
 $stderr.puts "client's public key: #{other_pub}"
 
-session_id = other_pub.to_bn.mod_exp(public, prime).to_i
+session_id = other_pub.to_bn.mod_exp(server_private, prime).to_i
 $stderr.puts "session key in hex: #{session_id.to_s(16)}"
 session_id = [session_id.to_s(16)].pack("H*")
 $stderr.puts session_id.length
