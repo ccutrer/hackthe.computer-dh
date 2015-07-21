@@ -46,7 +46,7 @@ client_nonce = 0xffffffffffffffff
 while true
   len = $stdin.read(4)
 $stderr.puts "got first line: #{len.inspect}"
-  break if len.empty?
+  break if !len || len.empty?
 
   len = len.unpack("L>").first
 
