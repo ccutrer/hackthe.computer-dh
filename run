@@ -24,7 +24,7 @@ while (session_id.length < 257)
 end
 #$stderr.puts session_id.length
 
-symm_key = OpenSSL::Digest::SHA256.digest(session_id)
+symm_key = OpenSSL::Digest::SHA256.digest(session_id)[0...16]
 #IO.popen("openssl sha256", "r+") do |io|
 #  io.write(session_id)
 #  io.flush
