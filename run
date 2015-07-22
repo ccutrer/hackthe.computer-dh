@@ -13,28 +13,28 @@ raise "suck" unless hello == "SimpleSSLv0\n"
 
 other_pub = $stdin.gets.strip.to_i(16)
 
-$stderr.puts "client's public key: #{other_pub}"
+#$stderr.puts "client's public key: #{other_pub}"
 
 session_id = other_pub.to_bn.mod_exp(private, prime).to_i
-$stderr.puts "session key in hex: #{session_id.to_s(16)}"
+#$stderr.puts "session key in hex: #{session_id.to_s(16)}"
 session_id = [session_id.to_s(16)].pack("H*")
-$stderr.puts session_id.length
+#$stderr.puts session_id.length
 while (session_id.length < 257)
   session_id = "\0" + session_id
 end
-$stderr.puts session_id.length
+#$stderr.puts session_id.length
 
-symm_key = nil
-IO.popen("openssl sha256", "r+") do |io|
-  io.write(session_id)
-  io.flush
-  io.close_write
-  symm_key = io.readlines.first
-end
-$stderr.puts symm_key.inspect
-$stderr.puts symm_key.slice(9, 32)
-symm_key = [symm_key.slice(9, 32)].pack("H*")
-$stderr.puts symm_key.inspect
+symm_key = OpenSSL::Digest::SHA256.digest(session_id)
+#IO.popen("openssl sha256", "r+") do |io|
+#  io.write(session_id)
+#  io.flush
+#  io.close_write
+#  symm_key = io.readlines.first
+#end
+#$stderr.puts symm_key.inspect
+#$stderr.puts symm_key.slice(9, 32)
+#symm_key = [symm_key.slice(9, 32)].pack("H*")
+#$stderr.puts symm_key.inspect
 
 puts 'OK'
 puts public.to_s(16).downcase
@@ -45,7 +45,7 @@ client_nonce = 0xffffffffffffffff
 
 while true
   len = $stdin.read(4)
-$stderr.puts "got first line: #{len.inspect}"
+#$stderr.puts "got first line: #{len.inspect}"
   break if !len || len.empty?
 
   len = len.unpack("L>").first
@@ -63,7 +63,7 @@ $stderr.puts "got first line: #{len.inspect}"
   plain = decrypt.update(data) + decrypt.final
 
 
-  $stderr.puts(iv.unpack("H*"))
+  #$stderr.puts(iv.unpack("H*"))
 
   encrypt = OpenSSL::Cipher.new('aes-128-gcm')
   encrypt.encrypt
